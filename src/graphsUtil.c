@@ -56,7 +56,6 @@ void showGraph(Graph *graph)
 
 void createGraph(Graph *graph, int graphOrder)
 {
- 
     graph->order = graphOrder;
     graph->adjacencyLists = malloc(graph->order * sizeof(Node*));
 

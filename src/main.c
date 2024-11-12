@@ -17,7 +17,7 @@ void loadGraph(char* fileName, Graph *graph)
 
     int graphOrder;
     fscanf(file, "%d", &graphOrder);
-
+    
     createGraph(graph, graphOrder);
     
     char buffer[256];
