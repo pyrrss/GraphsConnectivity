@@ -217,7 +217,8 @@ bool isConnected(Graph *graph, bool *deleted)
     }
 
     int startVertexIndex = 0;
-    if(deleted != NULL) // -> solo se usar para k-conectividad, no para conexidad
+    bool allDeleted = true;
+    if(deleted != NULL) // -> solo se usa para k-conectividad, no para conexidad, idea es hacer DFS desde vértice no eliminado
     {
 
         for(int i = 0;i < graph->order;i++) // -> para partir desde un vértice no eliminado
@@ -225,10 +226,17 @@ bool isConnected(Graph *graph, bool *deleted)
             if(!deleted[i])
             {
                 startVertexIndex = i;
+                allDeleted = false;
                 break;
             }
         }
-   
+
+        if(allDeleted) // -> si todos los vértices han sido eliminados, entonces G - V'_k disconexo
+        {
+            free(visitedVertexes);
+            return false;
+        }
+
     }
     
 
@@ -272,7 +280,6 @@ bool isConnected(Graph *graph, bool *deleted)
 
 bool testKValue(Graph *graph, int k, bool *deleted)
 {
-
     if(k == 1)
     {
         for(int i = 0;i < graph->order;i++)
@@ -284,16 +291,13 @@ bool testKValue(Graph *graph, int k, bool *deleted)
             {
                 return false;
             }
-
         }
 
     } else if(k == 2) {
-
         for (int i = 0; i < graph->order; i++) 
         {
             for (int j = i + 1; j < graph->order; j++) 
             {
-               
                 deleted[i] = true;
                 deleted[j] = true;
                 bool isConnectedAfterDelete = isConnected(graph, deleted);
@@ -308,7 +312,6 @@ bool testKValue(Graph *graph, int k, bool *deleted)
         }
         
     } else if(k == 3) {
-
         for (int i = 0; i < graph->order; i++) 
         {
             for (int j = i + 1; j < graph->order; j++) 
@@ -329,69 +332,43 @@ bool testKValue(Graph *graph, int k, bool *deleted)
                 }
             }
         }
-    } else if(k == 4) {
-
-        for (int i = 0; i < graph->order; i++) {
-            for (int j = i + 1; j < graph->order; j++) {
-                for (int l = j + 1; l < graph->order; l++) {
-                    for (int m = l + 1; m < graph->order; m++) {
-                        deleted[i] = true; 
-                        deleted[j] = true; 
-                        deleted[l] = true; 
-                        deleted[m] = true; 
-                        bool isConnectedAfterDelete = isConnected(graph, deleted);
-                        deleted[i] = false; 
-                        deleted[j] = false; 
-                        deleted[l] = false; 
-                        deleted[m] = false; 
-
-                        if (!isConnectedAfterDelete) {
-                            return false; 
-                        }
-                    }
-                }
-            }
-        }
-    }
-
+    } 
     return true;
-
 }
-/**
- * @brief asdasd
- * @param 
- * @author asdasd
- */
+
 int getKConnectivity(Graph *graph)
 {
-    if(getMinGrade(graph) == 0)
+    if(!isConnected(graph, NULL)) // -> si es disconexo es 0-conexo
     {
         return 0;
     }
+    
+    if(graph->order == 1) // -> grafo trivial es 1-conexo 
+    {
+        return 1;   
+    };
+
+    if(graph->order > 1 && getMinGrade(graph) == 0) // -> si no es grafo trivial y grado mínimo es 0 luego 0-conexo
+    {
+        return 0;
+    }
+   
 
     bool *deleted = malloc(graph->order * sizeof(bool)); // -> para ir marcando vértices eliminados
-    // int *combination = malloc(4 * sizeof(int)); // -> combinaciones de k vertices eliminados
    
     for(int i = 0;i < graph->order;i++)
     {
         deleted[i] = false;
     }
 
-    if(!isConnected(graph, NULL)) // -> si es disconexo es 0-conexo
-    {
 
-        return 0;
-
-    }
-
-    for(int k = 1;k <= 4;k++)
+    for(int k = 1;k <= 3;k++)
     {
 
         if(!testKValue(graph, k, deleted))
         {
 
             free(deleted);
-            // free(combination);
             return k;
 
         }
@@ -399,7 +376,6 @@ int getKConnectivity(Graph *graph)
     }
 
     free(deleted);
-    // free(combination);
     return 4; // -> si no falla para ningun k entre 1-4, al menos 4-conexo
 
 }

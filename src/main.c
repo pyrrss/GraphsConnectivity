@@ -5,14 +5,23 @@
 
 #include "graphsUtil.h"
 
-void loadGraph(char* fileName, Graph *graph)
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN "\033[36m"
+#define BOLD "\033[1m"
+
+bool loadGraph(char* fileName, Graph *graph)
 {
     FILE *file = fopen(fileName, "r");
 
     if(file == NULL)
     {
-        printf("Error leyendo archivo \n");
-        exit(1);
+        printf(RED "Error leyendo archivo %s. Verifique que el nombre sea correcto \n" RESET, fileName);
+        return false;
     }
 
     int graphOrder;
@@ -48,46 +57,40 @@ void loadGraph(char* fileName, Graph *graph)
     }
 
     fclose(file);
+    return true;
 
 }
 
-void mostrarMenu() {
-    printf("\n--- Menu Principal ---\n");
-    printf("1. Imprimir Grafo\n");
-    printf("2. Grado Maximo\n");
-    printf("3. Grado Minimo\n");
-    printf("4. Comprobar si es Conexo\n");
-    printf("5. Obtener k-conexidad\n");
-    printf("0. Salir\n");
-    printf("Seleccione una opcion: ");
+void showMenu() {
+
+    printf("\n" BOLD CYAN "--- Menu Principal ---\n" RESET);
+    printf(YELLOW "1. " RESET "Cargar Grafo desde archivo\n");
+    printf(YELLOW "2. " RESET "Imprimir Grafo\n");
+    printf(YELLOW "3. " RESET "Grado Máximo\n");
+    printf(YELLOW "4. " RESET "Grado Mínimo\n");
+    printf(YELLOW "5. " RESET "Comprobar si es Conexo\n");
+    printf(YELLOW "6. " RESET "Obtener k-conexidad\n");
+    printf(YELLOW "0. " RESET "Salir\n");
+    printf(CYAN "Seleccione una opción: " RESET);
+
 }
 
 
 int main(int argc, char *argv[])
 {
-    int opcion;
-    //char *currentGraphFile = "../graphsExamples/graph9";
-    char *currentGraphFile = argv[1];
-
-    
-    if(argc < 2)
-    {
-        printf("Se requiere un archivo como argumento \n");
-        exit(1);
-    }
-
+    int choice;
     Graph graph;
-    
-    loadGraph(currentGraphFile, &graph);
-    //showGraph(&graph);
-
-    int maxGrade = getMaxGrade(&graph);
-    int minGrade = getMinGrade(&graph);
+    bool graphLoaded = false;
 
     while (true) {
+        showMenu();
 
-        mostrarMenu();
-        scanf("%d", &opcion);
+        if (scanf("%d", &choice) != 1) {
+            printf(RED "Opción no válida. Por favor, intente de nuevo.\n" RESET);
+            while (getchar() != '\n'); 
+            //choice = -1;
+            continue;
+        }
 
         #ifdef _WIN32
             system("cls");
@@ -95,46 +98,74 @@ int main(int argc, char *argv[])
             system("clear");
         #endif
 
-        switch (opcion) {
-            case 1:
-                printf("\n");
-                showGraph(&graph);
-                break;
-            case 2: {
-                printf("\n");
-                printf("El grado maximo es: %d\n", maxGrade);
-                break;
-            }
-            case 3: {
-                printf("\n");
-                printf("El grado minimo es: %d\n", minGrade);
-                break;
-            }
-            case 4: {
-                if(!isConnected(&graph, NULL)){
-                    printf("\n");
-                    printf("El grafo es disconexo");
-                    printf("\n");
-
-                } else{
-                    
-                    printf("\n");
-                    printf("El grafo es conexo");
-                    printf("\n");
+        switch (choice) {
+            case 1: {
+                char fileName[256];
+                printf("Ingrese el nombre del archivo del grafo: ");
+                scanf("%s", fileName);
+                if(loadGraph(fileName, &graph))
+                {   
+                    graphLoaded = true;
+                    printf(GREEN "Grafo cargado exitosamente.\n" RESET);
+                } else {
+                    printf(RED "Error al cargar el grafo. Intente de nuevo \n" RESET);
+                    graphLoaded = false;
                 }
                 break;
             }
-            case 5:
-                int k = getKConnectivity(&graph);
-                printf("EL grafo es %d-conexo", k);
-                printf("\n");
+            case 2: {
+                if (graphLoaded) {
+                    printf("\n");
+                    showGraph(&graph);
+                } else {
+                    printf(RED "Primero cargue un grafo desde un archivo.\n" RESET);
+                }
                 break;
-
+            }
+            case 3: {
+                if (graphLoaded) {
+                    int maxGrade = getMaxGrade(&graph);
+                    printf(GREEN "\nEl grado máximo es: %d\n" RESET, maxGrade);
+                } else {
+                    printf(RED "Primero cargue un grafo desde un archivo.\n" RESET);
+                }
+                break;
+            }
+            case 4: {
+                if (graphLoaded) {
+                    int minGrade = getMinGrade(&graph);
+                    printf(GREEN "\nEl grado mínimo es: %d\n" RESET, minGrade);
+                } else {
+                    printf(RED "Primero cargue un grafo desde un archivo.\n" RESET);
+                }
+                break;
+            }
+            case 5: {
+                if (graphLoaded) {
+                    if(!isConnected(&graph, NULL)){
+                        printf(RED "\nEl grafo es disconexo\n" RESET);
+                    } else {
+                        printf(GREEN "\nEl grafo es conexo\n" RESET);
+                    }
+                } else {
+                    printf(RED "Primero cargue un grafo desde un archivo.\n" RESET);
+                }
+                break;
+            }
+            case 6: {
+                if (graphLoaded) {
+                    int k = getKConnectivity(&graph);
+                    printf(GREEN "El grafo es %d-conexo\n" RESET, k);
+                } else {
+                    printf(RED "Primero cargue un grafo desde un archivo.\n" RESET);
+                }
+                break;
+            }
             case 0:
-                printf("Saliendo del programa...\n");
+                printf(MAGENTA "Saliendo del programa...\n" RESET);
                 return 0;
             default:
-                printf("Opcion no valida. Por favor, intente de nuevo.\n");
+                printf(RED "Opción no válida. Por favor, intente de nuevo.\n" RESET);
         }
     }
 
