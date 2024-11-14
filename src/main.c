@@ -51,9 +51,21 @@ void loadGraph(char* fileName, Graph *graph)
 
 }
 
+void mostrarMenu() {
+    printf("\n--- Menu Principal ---\n");
+    printf("1. Imprimir Grafo\n");
+    printf("2. Grado Maximo\n");
+    printf("3. Grado Minimo\n");
+    printf("4. Comprobar si es Conexo\n");
+    printf("5. Obtener k-conexidad\n");
+    printf("0. Salir\n");
+    printf("Seleccione una opcion: ");
+}
+
+
 int main(int argc, char *argv[])
 {
-    
+    int opcion;
     //char *currentGraphFile = "../graphsExamples/graph9";
     char *currentGraphFile = argv[1];
 
@@ -67,33 +79,71 @@ int main(int argc, char *argv[])
     Graph graph;
     
     loadGraph(currentGraphFile, &graph);
-    showGraph(&graph);
+    //showGraph(&graph);
 
     int maxGrade = getMaxGrade(&graph);
     int minGrade = getMinGrade(&graph);
 
-    printf("\n");
-    printf("Grado máximo: %d", maxGrade);
-    printf("\n");
-    printf("Grado mínimo: %d \n", minGrade);
+    while (true) {
 
-    if(!isConnected(&graph, NULL))
-    {
+        mostrarMenu();
+        scanf("%d", &opcion);
 
-        printf("El grafo es disconexo");
+        #ifdef _WIN32
+            system("cls");
+        #else
+            system("clear");
+        #endif
 
-    } else{
-        
-        printf("El grafo es conexo");
-        
+        switch (opcion) {
+            case 1:
+                printf("\n");
+                showGraph(&graph);
+                break;
+            case 2: {
+                printf("\n");
+                printf("El grado maximo es: %d\n", maxGrade);
+                break;
+            }
+            case 3: {
+                printf("\n");
+                printf("El grado minimo es: %d\n", minGrade);
+                break;
+            }
+            case 4: {
+                if(!isConnected(&graph, NULL)){
+                    printf("\n");
+                    printf("El grafo es disconexo");
+                    printf("\n");
+
+                } else{
+                    
+                    printf("\n");
+                    printf("El grafo es conexo");
+                    printf("\n");
+                }
+                break;
+            }
+            case 5:
+                int k = getKConnectivity(&graph);
+                printf("EL grafo es %d-conexo", k);
+                printf("\n");
+                break;
+
+            case 0:
+                printf("Saliendo del programa...\n");
+                return 0;
+            default:
+                printf("Opcion no valida. Por favor, intente de nuevo.\n");
+        }
     }
-    
-    printf("\n");
-    int k = getKConnectivity(&graph);
-    printf("EL grafo es %d-conexo", k);
-
-    // FALTA MANEJO WHILE TRUE E INTERFAZ TERMINAL
 
     printf("\n");
     return 0;
 }
+
+   
+
+   
+    
+ 
