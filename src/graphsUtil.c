@@ -167,7 +167,6 @@ void DFS(Graph *graph, int vertexIndex, bool *visited, bool *deleted)
                                         
         if(!visited[currentNode->vertex]  && currentNode->vertex >= 0 && currentNode->vertex < graph->order)
         {
-            // printf("%d ", currentNode->vertex);
             if(deleted == NULL)
             {
 
@@ -177,7 +176,6 @@ void DFS(Graph *graph, int vertexIndex, bool *visited, bool *deleted)
 
                 if(!deleted[currentNode->vertex])
                 {
-                    // printf("\n %d ", currentNode->vertex);
                     DFS(graph, currentNode->vertex, visited, deleted);
 
                 } 

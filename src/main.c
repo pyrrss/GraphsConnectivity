@@ -63,7 +63,7 @@ bool loadGraph(char* fileName, Graph *graph)
 
 void showMenu() {
 
-    printf("\n" BOLD CYAN "--- Menu Principal ---\n" RESET);
+    printf("\n" BOLD CYAN "--- Menú Principal ---\n" RESET);
     printf(YELLOW "1. " RESET "Cargar Grafo desde archivo\n");
     printf(YELLOW "2. " RESET "Imprimir Grafo\n");
     printf(YELLOW "3. " RESET "Grado Máximo\n");
